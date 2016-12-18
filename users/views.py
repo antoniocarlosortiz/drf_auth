@@ -1,3 +1,9 @@
+from djang.conf import settings
 from django.shortcuts import render
 
-# Create your views here.
+from serializers import UserSerializer
+
+
+class UserView(CreateAPIView):
+    model = settings.AUTH_USER_MODEL
+    serializer_class = UserSerializer
