@@ -122,3 +122,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = "users.User"
+
+EMAIL_PORT = 1025
+EMAIL_HOST = 'localhost'
+EMAIL_ADMIN = 'info@drfauth.com'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

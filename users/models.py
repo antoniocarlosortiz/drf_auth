@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 
 class UserManager(BaseUserManager):
@@ -35,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text=('Designates whether this user should be treated as '
                   'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField('date joined', default=timezone.now)
-
+    confirm_key = models.CharField(max_length=40, unique=True)
 
     USERNAME_FIELD = 'email'
     objects = UserManager()
@@ -43,14 +46,35 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         ordering = ['email']
 
+    def save(self, *args, **kwargs):
+        if not self.confirm_key:
+            while True:
+                confirm_key = get_random_string(length=25)
+                exists = self.__class__.objects.filter(
+                    confirm_key=confirm_key).exists()
+                if not exists:
+                    self.confirm_key = confirm_key
+                    break
+
+        return super(User, self).save(*args, **kwargs)
+
     def get_full_name(self):
         return self.email
 
     def get_short_name(self):
         return self.email
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """
-        Sends an email to this User.
-        """
-        send_mail(subject, message, from_email, [self.email], **kwargs)
+    def send_confirm_email(self):
+        confirm_url = '{}{}?code={}'.format(
+            settings.EMAIL_HOST,
+            reverse_lazy('user-confirm'),
+            self.confirm_key,
+        )
+
+        send_mail(
+            'Confirm your Email Address',
+            confirm_url,
+            settings.EMAIL_ADMIN,
+            [self.email])
+
+        return True
