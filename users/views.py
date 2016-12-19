@@ -6,14 +6,23 @@ from rest_framework import generics
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import permissions
 
 from .serializers import UserSerializer
 from .serializers import UserSignInSerializer
 
 
-class UserView(generics.CreateAPIView):
-    model = get_user_model()
+class UserView(generics.ListCreateAPIView):
+    queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    hidden_fields = ('email', 'last_name')
+
+    def get_serializer_context(self):
+        context = super(UserView, self).get_serializer_context()
+        if (self.request.method in permissions.SAFE_METHODS and
+                not self.request.user.is_authenticated):
+            context['hidden_fields'] = self.hidden_fields
+        return context
 
 
 class UserConfirmView(APIView):

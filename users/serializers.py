@@ -5,11 +5,19 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        hidden_fields = kwargs['context'].pop('hidden_fields', None)
+        super(UserSerializer, self).__init__(*args, **kwargs)
+
+        if hidden_fields:
+            hidden_fields = set(hidden_fields)
+            for field_name in hidden_fields:
+                self.fields.pop(field_name)
 
     class Meta:
         model = get_user_model()
         fields = ('id', 'first_name', 'last_name',
-            'email', 'password', 'is_active')
+                  'email', 'password', 'is_active')
         extra_kwargs = {
                 'password': {'write_only': True}
         }
