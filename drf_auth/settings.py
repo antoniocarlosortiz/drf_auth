@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'oauth2_provider',
     'users',
 ]
 
@@ -128,9 +127,3 @@ EMAIL_PORT = 1025
 EMAIL_HOST = 'localhost'
 EMAIL_ADMIN = 'info@drfauth.com'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-    ),
-} 
