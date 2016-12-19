@@ -10,5 +10,8 @@ urlpatterns = format_suffix_patterns([
         name='user-list'),
     url(r'^users/confirm/$',
         views.UserConfirmView.as_view(),
-        name='user-confirm')
+        name='user-confirm'),
+    url(r'^users/sign-in/$',
+        views.UserSignInView.as_view(),
+        name='users-sign-in'),
 ])
