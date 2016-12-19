@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import UserSerializer
-from .serializers import UserSignInSerialzer
+from .serializers import UserSignInSerializer
 
 
 class UserView(generics.CreateAPIView):
@@ -38,13 +38,9 @@ class UserConfirmView(APIView):
 
 
 class UserSignInView(APIView):
-    def post(self, request, format=None):
-        serializer = UserSignInSerialzer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data
-            token, created = Token.objects.create(user=user)
-            content = {'token': token}
-            return Response(content, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        serializer = UserSignInSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)

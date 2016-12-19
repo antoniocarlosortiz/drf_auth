@@ -21,22 +21,31 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSignInSerializer(serializers.ModelSerializer):
+class UserSignInSerializer(serializers.Serializer):
+    email = serializers.CharField(label='email')
+    password = serializers.CharField(
+        label='Password', style={'input_type': 'password'})
 
-    class Meta:
-        model = get_user_model()
-        fields = ('email', 'password')
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
 
-    def validate_email(self, value):
-        User = get_user_model()
-        try:
-            User.objects.get(email=value)
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User does not exist.")
-        return value
+        if email and password:
+            user = authenticate(email=email, password=password)
 
-    def validate(self, data):
-        user = authenticate(email=data['email'], password=data['password'])
-        if not user:
-            raise serializers.ValidationError("Password does not match user.")
-        return data
+            if user:
+                # From Django 1.10 onwards the `authenticate` call simply
+                # returns `None` for is_active=False users.
+                # (Assuming the default `ModelBackend` authentication backend.)
+                if not user.is_active:
+                    msg = 'User account is disabled.'
+                    raise serializers.ValidationError(msg, code='authorization')
+            else:
+                msg = 'Unable to log in with provided credentials.'
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = 'Must include "email" and "password".'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
