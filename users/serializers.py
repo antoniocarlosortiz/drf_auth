@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     def __init__(self, *args, **kwargs):
         hidden_fields = kwargs['context'].pop('hidden_fields', None)
         super(UserSerializer, self).__init__(*args, **kwargs)
@@ -15,10 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'first_name', 'last_name',
+        fields = ('url', 'id', 'first_name', 'last_name',
                   'email', 'password', 'is_active')
         extra_kwargs = {
-                'password': {'write_only': True}
+                'url': {'view_name': 'users:detail', 'lookup_field': 'pk'},
+                'password': {'write_only': True},
         }
 
     def create(self, validated_data):
