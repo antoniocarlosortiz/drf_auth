@@ -17,6 +17,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = get_user_model()
         fields = ('url', 'id', 'first_name', 'last_name',
                   'email', 'password', 'is_active')
+        read_only_fields = ('is_active',)
         extra_kwargs = {
                 'url': {'view_name': 'users:detail', 'lookup_field': 'pk'},
                 'password': {'write_only': True},
