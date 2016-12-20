@@ -1,5 +1,11 @@
 # drf_auth
 
+## How to run
+```bash
+pip install -r requirements.txt
+./manage.py runserver
+```
+
 ##App usage guide using httpie (CURL substitute)
 ###Register a user
 `http --json POST :8000/users/ email=a@c.com first_name=a last_name=c password=ac`
