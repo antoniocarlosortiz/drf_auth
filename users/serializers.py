@@ -56,3 +56,8 @@ class UserSignInSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(
+        label='Password', style={'input_type': 'password'}, required=True)

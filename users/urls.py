@@ -14,4 +14,7 @@ urlpatterns = format_suffix_patterns([
     url(r'^users/sign-in/$',
         views.UserSignInView.as_view(),
         name='user-sign-in'),
+    url(r'^users/change-password/$',
+        views.UserChangePasswordView.as_view(),
+        name='user-change-password'),
 ])

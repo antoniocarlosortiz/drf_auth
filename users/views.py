@@ -8,6 +8,7 @@ from rest_framework import permissions
 
 from .serializers import UserSerializer
 from .serializers import UserSignInSerializer
+from .serializers import UserChangePasswordSerializer
 
 
 class UserView(generics.ListCreateAPIView):
@@ -51,3 +52,15 @@ class UserSignInView(APIView):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key}, status=status.HTTP_200_OK)
+
+
+class UserChangePasswordView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = UserChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        user.set_password(serializer.validated_data['password'])
+        user.save()
+        return Response()
