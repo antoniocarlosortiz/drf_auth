@@ -24,6 +24,11 @@ class UserView(generics.ListCreateAPIView):
         return context
 
 
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+
+
 class UserConfirmView(APIView):
     def get(self, request, format=None):
         confirm_key = request.GET.get('code')
