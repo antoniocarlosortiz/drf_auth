@@ -27,6 +27,14 @@ class UserView(generics.ListCreateAPIView):
 class UserDetailView(generics.RetrieveAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    hidden_fields = ('email', 'last_name')
+
+    def get_serializer_context(self):
+        context = super(UserDetailView, self).get_serializer_context()
+        if (self.request.method in permissions.SAFE_METHODS and
+                not self.request.user.is_authenticated):
+            context['hidden_fields'] = self.hidden_fields
+        return context
 
 
 class UserConfirmView(APIView):
@@ -46,8 +54,7 @@ class UserConfirmView(APIView):
 
         user.is_active = True
         user.save()
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        return Response()
 
 
 class UserSignInView(APIView):
