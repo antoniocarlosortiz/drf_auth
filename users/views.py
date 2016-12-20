@@ -42,7 +42,7 @@ class UserConfirmView(APIView):
         user.is_active = True
         user.save()
         serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
 
 class UserSignInView(APIView):
@@ -51,7 +51,7 @@ class UserSignInView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response({'token': token.key})
 
 
 class UserChangePasswordView(APIView):
