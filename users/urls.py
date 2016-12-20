@@ -5,16 +5,10 @@ import views
 
 # API endpoints
 urlpatterns = format_suffix_patterns([
-    url(r'^users/$',
-        views.UserView.as_view(),
-        name='user-list'),
-    url(r'^users/confirm/$',
-        views.UserConfirmView.as_view(),
-        name='user-confirm'),
-    url(r'^users/sign-in/$',
-        views.UserSignInView.as_view(),
-        name='user-sign-in'),
-    url(r'^users/change-password/$',
-        views.UserChangePasswordView.as_view(),
-        name='user-change-password'),
+    url(r'^$', views.UserView.as_view(), name='list'),
+
+    url(r'^confirm/$', views.UserConfirmView.as_view(), name='confirm'),
+    url(r'^sign-in/$', views.UserSignInView.as_view(), name='sign-in'),
+    url(r'^change-password/$', views.UserChangePasswordView.as_view(),
+        name='change-password'),
 ])

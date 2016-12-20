@@ -67,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def send_confirm_email(self):
         confirm_url = '{}{}?code={}'.format(
             settings.EMAIL_HOST,
-            reverse_lazy('user-confirm'),
+            reverse_lazy('users:confirm'),
             self.confirm_key,
         )
 
