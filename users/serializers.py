@@ -37,21 +37,17 @@ class UserSignInSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
 
-        if email and password:
-            user = authenticate(email=email, password=password)
+        user = authenticate(email=email, password=password)
 
-            if user:
-                # From Django 1.10 onwards the `authenticate` call simply
-                # returns `None` for is_active=False users.
-                # (Assuming the default `ModelBackend` authentication backend.)
-                if not user.is_active:
-                    msg = 'User account is disabled.'
-                    raise serializers.ValidationError(msg, code='authorization')
-            else:
-                msg = 'Unable to log in with provided credentials.'
+        if user:
+            # From Django 1.10 onwards the `authenticate` call simply
+            # returns `None` for is_active=False users.
+            # (Assuming the default `ModelBackend` authentication backend.)
+            if not user.is_active:
+                msg = 'User account is disabled.'
                 raise serializers.ValidationError(msg, code='authorization')
         else:
-            msg = 'Must include "email" and "password".'
+            msg = 'Unable to log in with provided credentials.'
             raise serializers.ValidationError(msg, code='authorization')
 
         attrs['user'] = user
@@ -60,4 +56,4 @@ class UserSignInSerializer(serializers.Serializer):
 
 class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(
-        label='Password', style={'input_type': 'password'}, required=True)
+        label='Password', style={'input_type': 'password'})
